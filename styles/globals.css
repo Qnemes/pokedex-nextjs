@@ -1,16 +1,20 @@
-html,
-body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-* {
-  box-sizing: border-box;
+@layer components {
+  .btn-navigation {
+    @apply border-none py-2 px-4 mx-4 rounded-lg bg-[#4abfee] text-white text-base 
+    font-semibold transition-colors ease-in duration-[.25s] hover:bg-[#FF4081];
+  }
+  .shine-effect {
+    @apply before:block before:absolute before:top-0 before:-left-[85%] before:z-40 before:w-1/2 before:h-full
+    before:-skew-x-[25deg] before:bg-left-top before:bg-gradient-to-r 
+    before:from-[rgba(255,255,255,0.1)] before:to-[rgba(255,255,255,0.3)] 
+     hover:before:animate-shine;
+  }
+  .pagination-item {
+    @apply flex items-center py-0 px-3 h-8 text-center my-auto mx-1 text-[rgba(0,0,0,0.87)] tracking-[0.01071em]
+    rounded-2xl leading-[1.43] text-[13px] min-w-[32px] hover:bg-[rgba(0,0,0,0.04)] hover:cursor-pointer;
+  }
 }
