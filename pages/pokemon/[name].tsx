@@ -6,7 +6,7 @@ import { Pokemon } from '../../types/interface';
 import PokemonPage from '../../components/PokemonPage';
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const res = await fetch('https://pokeapi.co/api/v2/pokemon/?limit=800'); // 893
+  const res = await fetch('https://pokeapi.co/api/v2/pokemon/?limit=300'); // 893
   const { results } = await res.json();
   const paths = results.map((pokemon: Pokemon) => ({
     params: { name: pokemon.name },
@@ -29,6 +29,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     };
   } catch (error) {
     console.log(error.message);
+    return null;
   }
 };
 

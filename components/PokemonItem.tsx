@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Pokemon } from '../types/interface';
 
-function PokemonItem({ pokemon, index }): JSX.Element {
+function PokemonItem({ pokemon, index }: { pokemon: Pokemon; index: number }): JSX.Element {
   return (
     <div
       key={index}

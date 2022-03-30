@@ -1,4 +1,3 @@
-import classnames from 'classnames';
 import { usePagination, DOTS } from '../hooks/usePagination';
 
 // Conditionally joining class names

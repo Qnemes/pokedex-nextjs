@@ -2,8 +2,9 @@ import { useState, Fragment, useMemo } from 'react';
 import { GetStaticProps } from 'next';
 import Header from '../components/Header';
 import PokemonItem from '../components/PokemonItem';
-import { Pokemon } from '../types/interface';
 import Pagination from '../components/Pagination';
+import { useDebounce } from '../hooks/useDebounce';
+import { Pokemon } from '../types/interface';
 
 const validatePokemonName = (name: string) => {
   const pokemonURL = {
@@ -52,7 +53,7 @@ const validatePokemonName = (name: string) => {
 
 export const getStaticProps: GetStaticProps = async () => {
   try {
-    const res = await fetch('https://pokeapi.co/api/v2/pokemon/?limit=800'); // total pokemons: 893
+    const res = await fetch('https://pokeapi.co/api/v2/pokemon/?limit=300'); // total pokemons: 893
     const { results } = await res.json();
     const pokemonData: Pokemon[] = results.map((pokemon: Pokemon) => {
       const image = `https://projectpokemon.org/images/${validatePokemonName(pokemon.name)}.gif`;
@@ -64,6 +65,7 @@ export const getStaticProps: GetStaticProps = async () => {
     };
   } catch (error) {
     console.log(error.message);
+    return null;
   }
 };
 
@@ -71,21 +73,17 @@ export default function Home({ pokemonData }: { pokemonData: Pokemon[] }): JSX.E
   const pageSize = 20;
   const [currentPage, setCurrentPage] = useState(1);
 
-  // const currentPageData = useMemo(() => {
-  //   const firstPageIndex = (currentPage - 1) * pageSize;
-  //   const lastPageIndex = firstPageIndex + pageSize;
-  //   return pokemonData.slice(firstPageIndex, lastPageIndex);
-  // }, [currentPage, pokemonData]);
-
   const [filter, setFilter] = useState('');
+
+  const debouncedFilter = useDebounce(filter, 200);
 
   const filteredPokemons = useMemo(() => {
     const firstPageIndex = (currentPage - 1) * pageSize;
     const lastPageIndex = firstPageIndex + pageSize;
     return pokemonData
-      .filter((pokemon) => pokemon.name.toLowerCase().includes(filter.toLowerCase()))
+      .filter((pokemon) => pokemon.name.toLowerCase().includes(debouncedFilter.toLowerCase()))
       .slice(firstPageIndex, lastPageIndex);
-  }, [filter, currentPage, pokemonData]);
+  }, [debouncedFilter, currentPage, pokemonData]);
 
   return (
     <Fragment>
@@ -103,13 +101,7 @@ export default function Home({ pokemonData }: { pokemonData: Pokemon[] }): JSX.E
             />
             <button className="btn-navigation">Next page</button>
           </div>
-          <div className="w-[70%] my-0 mx-auto grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-            {filteredPokemons.map((pokemon, index) => (
-              <PokemonItem key={pokemon.name} pokemon={pokemon} index={index} />
-            ))}
-          </div>
-
-          {/* {filteredPokemons.length ? (
+          {filteredPokemons.length ? (
             <div className="w-[70%] my-0 mx-auto grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
               {filteredPokemons.map((pokemon, index) => (
                 <PokemonItem key={pokemon.name} pokemon={pokemon} index={index} />
@@ -119,14 +111,14 @@ export default function Home({ pokemonData }: { pokemonData: Pokemon[] }): JSX.E
             <div className="mx-auto my-0 text-center font-medium leading-tight text-5xl text-[#FF4081]">
               No results
             </div>
-          )} */}
+          )}
           <div className="flex justify-center my-8">
             <Pagination
               className="bg-cyan-100 border-2 border-cyan-500 text-cyan-700 px-4 py-3 rounded-md"
               currentPage={currentPage}
               totalCount={pokemonData.length}
               pageSize={pageSize}
-              onPageChange={(page) => setCurrentPage(page)}
+              onPageChange={(page: number) => setCurrentPage(page)}
             />
             {/* <button className="btn-navigation">Previous page</button>
             <button className="btn-navigation">Next page</button> */}
